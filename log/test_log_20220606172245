@@ -1,0 +1,6 @@
+Welcome to signature generator.
+uniqueID.txt file checked OK ...
+verified-boot.key file checked OK ...
+Processing with ID=hello
+Error!
+Failed generating signature.
