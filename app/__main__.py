@@ -9,7 +9,7 @@ LOG_dir = "log"
 LOGfile_pre = "/test_log_"
 FILE_list = [ID_file, KEY_file]
 
-def logging(message, date):
+def logging(message):
     print(message)
 
     if not os.path.isdir(LOG_dir):
@@ -18,7 +18,7 @@ def logging(message, date):
         except FileExistsError:
             print("Folder exists already.")
             pass
-    log_file = LOG_dir + LOGfile_pre + date
+
     with open(log_file, 'a+') as f:
         f.write(message + '\n')
         f.close
@@ -27,39 +27,42 @@ def gen_sig(id):
     try:
         for file in FILE_list:
             if os.path.isfile(file):
-                logging(file + " file checked OK ...", date)
+                logging(file + " file checked OK ...")
             else:
-                logging(file + " file doesn't exist, quitting...", date)
+                logging(file + " file doesn't exist, quitting...")
                 exit()
-        logging("Processing with ID=" + id, date)
+        logging("Processing with ID=" + "\"" + id + "\"")
         command = subprocess.run('openssl dgst -sha256 -sign verified-boot.key uniqueId.txt | base64 -w0 > signature.txt', shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
-        logging(command.stdout, date)
+        logging(command.stdout)
         return True
     except:
-        logging("Error!", date)
+        logging("Error!")
         return False
 
 
 def main() -> None:
     global date
-    date  = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    logging("Welcome to signature generator.", date)
+    global log_file
 
     while True:
-        ID = input("Please input Unique ID here:\n").strip()
+        date  = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        log_file = LOG_dir + LOGfile_pre + date
+        logging("Welcome, please input your Unique ID here:")
+        ID = input().strip()
+
         if ID == "":
-            logging("Error, ID is empty!", date)
+            logging("Error, ID is empty!")
             continue
         else:
             with open(ID_file, 'w') as f:
                 f.write(ID)
                 f.close()
             while(gen_sig(ID)):
-                logging("Signature is successfully generated as below(also stored in signature.txt):\n", date)
+                logging("Signature is successfully generated as below(also stored in signature.txt):\n")
                 command = subprocess.run('cat signature.txt', shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
-                logging(command.stdout + "\n", date)
+                logging(command.stdout + "\n")
                 exit()
-            logging("Failed generating signature.", date)
+            logging("Failed generating signature.")
             break
 
 if __name__ == "__main__":

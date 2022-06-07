@@ -1,6 +1,6 @@
-Welcome to signature generator.
+Welcome, please input your Unique ID here:
 uniqueID.txt file checked OK ...
 verified-boot.key file checked OK ...
-Processing with ID=hello
+Processing with ID="HELLO WORLD"
 Error!
 Failed generating signature.
