@@ -1,6 +1,7 @@
 import subprocess
 import os
 import datetime
+import platform
 
 ID_file = "uniqueID.txt"
 KEY_file = "verified-boot.key"
@@ -43,11 +44,13 @@ def gen_sig(id):
 def main() -> None:
     global date
     global log_file
+    global my_os
+    my_os = platform.system()
 
     while True:
         date  = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         log_file = LOG_dir + LOGfile_pre + date
-        logging("Welcome, please input your Unique ID here:")
+        logging("Welcome, dear " + my_os + " user, " + "please input your Unique ID here:")
         ID = input().strip()
 
         if ID == "":
@@ -59,7 +62,10 @@ def main() -> None:
                 f.close()
             while(gen_sig(ID)):
                 logging("Signature is successfully generated as below(also stored in signature.txt):\n")
-                command = subprocess.run('cat signature.txt', shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                if my_os == "Windows":
+                    command = subprocess.run('type signature.txt', shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+                else:
+                    command = subprocess.run('cat signature.txt', shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
                 logging(command.stdout + "\n")
                 exit()
             logging("Failed generating signature.")
